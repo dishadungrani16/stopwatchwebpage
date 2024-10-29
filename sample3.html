@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Stopwatch Application</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0e4d7; 
+            color: #4a3d3d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+        .circle1 {
+            width: 400px;
+            height: 400px;
+            background-color: #e0b89d;
+            top: -100px;
+            left: -100px;
+        }
+        .circle2 {
+            width: 500px;
+            height: 500px;
+            background-color: #c2a29a;
+            bottom: -150px;
+            right: -150px;
+        }
+
+        .container {
+            background-color: #fffaf0;
+            border-radius: 20px;
+            padding: 40px 50px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            animation: fadeIn 1s ease;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #6a5149;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        header h2 {
+            font-size: 1.3em;
+            color: #8b6a5e;
+            margin-bottom: 30px;
+        }
+
+        .stopwatch #display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #5a4b4b;
+            background-color: #e3d6c7;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+            margin: 30px 0;
+            transition: all 0.3s ease;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .buttons button {
+            color: #fff;
+            padding: 15px 25px;
+            margin: 5px;
+            border-radius: 50px;
+            font-size: 1.4em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            border: none;
+        }
+
+        
+        .buttons .start {
+            background-color: #c68a82; 
+        .buttons .start:hover {
+            background-color: #b07669;
+        }
+
+        .buttons .pause {
+            background-color: #7a937a; 
+        }
+        .buttons .pause:hover {
+            background-color: #6a826a;
+        }
+
+        .buttons .reset {
+            background-color: #aca889; 
+        }
+        .buttons .reset:hover {
+            background-color: #968f73;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <div class="container">
+        <header>
+            <h1>Stopwatch</h1>
+            <h2>Track Your Time</h2>
+        </header>
+        <section class="stopwatch">
+            <div id="display">00:00:00</div>
+            <div class="buttons">
+                <button class="start" onclick="start()">Start</button>
+                <button class="pause" onclick="pause()">Pause</button>
+                <button class="reset" onclick="reset()">Reset</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        
+        let startTime;
+        let updatedTime;
+        let difference;
+        let interval;
+        let running = false;
+        const displayElement = document.getElementById("display");
+
+        function start() {
+            if (!running) {
+                startTime = new Date().getTime() - (difference || 0);
+                interval = setInterval(updateDisplay, 10);
+                running = true;
+                displayElement.style.animation = "pulse 1s infinite";
+            }
+        }
+
+        function pause() {
+            if (running) {
+                clearInterval(interval);
+                running = false;
+                difference = new Date().getTime() - startTime;
+                displayElement.style.animation = "";
+            }
+        }
+
+        function reset() {
+            clearInterval(interval);
+            running = false;
+            difference = 0;
+            displayElement.innerText = "00:00:00";
+            displayElement.style.animation = "";
+            displayElement.style.opacity = "0";
+            setTimeout(() => {
+                displayElement.style.opacity = "1";
+            }, 50);
+        }
+
+        function updateDisplay() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+
+            const hours = Math.floor(difference / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
+
+            displayElement.innerText = `${hours}:${minutes}:${seconds}`;
+        }
+    </script>
+</body>
+</html>
